@@ -1,0 +1,13 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div class="flex">
+    <div>
+        <img src="https://images.tmdb.org/t/p/w1280/{{person_details.profile_path}}" class=" w-80 ml-28 mt-16 mb-12 rounded-lg shadow-2xl" loading="lazy">
+    </div>
+    <div class="mt-20 ml-12">
+        <p class="font-bold text-4xl">{{person_details.name}}</p>
+    </div>
+</div>
+{% endblock content %}

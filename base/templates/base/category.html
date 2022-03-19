@@ -1,0 +1,34 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<style>
+    .home-container {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+    }
+</style>
+
+<div class="home-container">
+
+    <div>
+        <a href="{% url 'home'  %}?q=Top250Movies"><h3>Top 250 Movies</h3></a>
+        <a href="{% url 'home'  %}?q=Top250TVShows"><h3>Top 250 TV shows</h3></a>
+        <a href="{% url 'home'  %}?q=LikedMovies"><h3>Liked Movies</h3></a>
+        <a href="{% url 'home'  %}?q=Friends"><h3>Friends</h3></a>
+        <hr>
+    </div>
+
+    <div class="main-content">
+            <h5>Found {{results}} movies</h5>
+            <h2>{{q}}</h2>
+            {% for show in category %}
+            <img src="{{show.image}}" alt="show image">
+            <p>{{show.fullTitle}} -- {{show.year}} -- {{show.imDbRating}}</p>
+
+            {% endfor %}
+    </div>
+
+</div>
+
+{% endblock content %}

@@ -1,0 +1,33 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<h1>Here are the results</h1>
+
+<div class="flex gap-x-10">
+    <div class="w-1/5 bg-red-100 pr-44 mt-8">
+        <ul>
+            <li>Movies</li>
+            <li>TV Shows</li>
+            <li>People</li>
+            <li>Companies</li>
+        </ul>
+    </div>
+
+    <div class="w-4/5 mt-3">
+        {% for movie in movie_details %}
+            <div class="mt-5 w-[95%] h-44">
+            <a href="{% url 'movies' movie.id %}" class="flex bg-white rounded-lg shadow-md gap-3">
+                    <img class="object-cover w-24 rounded-l-lg" src="https://images.tmdb.org/t/p/w1280/{{movie.Image}}" alt="">
+                    <div class="pt-5 pb-5 overflow-hidden">
+                        <p class="text-lg font-semibold">{{movie.Title}}</p>
+                        <p class="text-md text-gray-500">{{movie.Year}}</p>
+                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 text-ellipsis">{{movie.Overview}}</p>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

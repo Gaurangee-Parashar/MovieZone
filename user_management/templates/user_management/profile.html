@@ -1,0 +1,6 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <p>{{user.username}}</p>
+    <p>joined {{user.date_joined | timesince}} ago</p>
+{% endblock content %}
