@@ -31,17 +31,18 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
+    'rest_framework',
 
     'base.apps.BaseConfig',
     'user_management.apps.UserManagementConfig',
-    'social.apps.SocialConfig'
+    'social.apps.SocialConfig',
 
 ]
 
@@ -79,7 +80,13 @@ TEMPLATES = [
 # AUTH_USER_MODEL = 'user_management.User'
 
 WSGI_APPLICATION = 'MovieZone.wsgi.application'
+ASGI_APPLICATION = 'MovieZone.asgi.application'
 
+# CHANNEL_LAYERS = {
+#     'default' : {
+#         'BACKED' : 'channels.layers.InMemoryChannelLayer'
+#     }
+# }
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases

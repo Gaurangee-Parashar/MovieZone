@@ -1,5 +1,3 @@
-from multiprocessing import context
-import uuid
 import requests
 from django.shortcuts import redirect, render
 from social.models import Review, ReviewReply
@@ -73,15 +71,6 @@ def movies(request, id):
         review_replies.append(get_review_replies(review))
     movie_details = requests.get(f'https://api.themoviedb.org/3/movie/{id}?api_key={KEY}').json()
     movie_cast = requests.get(f"https://api.themoviedb.org/3/movie/{id}/credits?api_key={KEY}").json()['cast']
-
-    if request.method == 'POST':
-        review = Review.objects.create(
-            user = request.user,
-            movie_id = id,
-            id=str(uuid.uuid4()),
-            body = request.POST.get('body')
-        )
-        return redirect('movies', id)
 
     context = {'movie_details' : movie_details, 'movie_cast' : movie_cast, 'reviews' : reviews, 'review_replies' : review_replies}
     return render(request, 'base/movies.html', context)
