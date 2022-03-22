@@ -3,8 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-
+from .forms import CreateUserForm
 # Create your views here.
 
 def loginPage(request):
@@ -36,10 +35,10 @@ def logoutView(request):
     return redirect('home')
 
 def registerPage(request):
-    form = UserCreationForm()
+    form = CreateUserForm()
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CreateUserForm(request.POST)
 
         if form.is_valid():
             user = form.save(commit=False)

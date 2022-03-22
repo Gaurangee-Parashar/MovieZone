@@ -1,5 +1,6 @@
 import requests
 from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
 from social.models import Review, ReviewReply
 
 # Home page 
@@ -11,6 +12,7 @@ def most_popular(KEY):
     response = requests.get(f"https://api.themoviedb.org/3/movie/popular?api_key={KEY}").json().get('results')
     return response
 
+@login_required(login_url='login')
 def home(request):
     KEY = "08e732edbde3ebbc312edf9503748b58"
     q = request.GET.get('q') if request.GET.get('q') != None else ''

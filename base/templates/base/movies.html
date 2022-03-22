@@ -64,12 +64,12 @@
         {% for review in reviews %}
         <h3><a href="{% url 'profile' review.user.id %}">@{{review.user.username}}</a> - {{review.created | timesince}} ago
             {% if request.user == review.user %}<a href="{% url 'delete_review' review.id %}">Delete</a>{% endif %}</h3>
-        <p>****{{review.body}}</p>
+        <p>---->{{review.body}}</p>
         {% for reply in review_replies %}
         {% if reply.parent_review.id == review.id %}
-        <h3>****@{{reply.user.username}} replied to @{{reply.parent_review.user.username}} - {{reply.created | timesince}}
+        <h3>@{{reply.user.username}} replied to @{{reply.parent_review.user.username}} - {{reply.created | timesince}}
             ago </h3>
-        <p>****{{reply.body}}</p>
+        <p>----{{reply.body}}</p>
         {% endif %}
         {% endfor %}
         {% endfor %}
@@ -123,13 +123,18 @@
 
         xhr.onload = function() {
             const data = JSON.parse(this.responseText);
-            const new_reply = document.getElementById('replies');
-            new_reply.insertAdjacentHTML('beforebegin', `
-                <div>
-                    <h3>@${data.user.username} - ${data.created} ago</h3>
-                    <p>****${data.body}</p>
-                </div>
-            `)
+            const date = new Date(data.created).getMinutes();
+            const currentTime = new Date(Date.now()).getMinutes();
+            const replies = document.getElementById('replies');
+
+            // Creating the new reply element
+            const new_reply = document.createElement('div');
+            const new_reply_heading = document.createElement('h3')
+            new_reply_heading.innerHTML = `<a href="http://${window.location.hostname}:${window.location.port}/profile/${data.user.user_id}">@${data.user.username}</a> - ${currentTime - date} minutes ago`
+            const new_reply_body = document.createElement('p').appendChild(document.createTextNode(`---->${data.body}`))
+            new_reply.appendChild(new_reply_heading)
+            new_reply.appendChild(new_reply_body)
+            replies.prepend(new_reply)
         }
 
         xhr.send(body);

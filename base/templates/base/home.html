@@ -5,7 +5,7 @@
 
 <div class="home-container flex">
 
-    <div class="sidebar w-1/6">
+    <div class="sidebar w-1/5 ">
         <a href="{% url 'home'  %}?q=Top250Movies"><h3>Trending</h3></a>
         <a href="{% url 'home'  %}?q=Top250TVShows"><h3>Popular</h3></a>
         {% if request.user.is_authenticated == True %}
@@ -15,12 +15,12 @@
         <hr>
     </div>
 
-    <div class="main-content w-4/6">
+    <div class="main-content w-4/5">
         <h2 class="text-2xl font-semibold mx-7 pb-5 pt-5">Coming Soon</h2>
-        <div class="grid grid-flow-col auto-cols-[18%] overflow-x-auto gap-x-3 mx-5 pb-8 " >
+        <div class="grid grid-flow-col auto-cols-[15%] overflow-x-auto gap-x-3 mx-5 pb-8 " >
             
             {% for coming_soon_movie in movies_coming_soon %} 
-                <div class="bg-white pt-3 pl-3 rounded-lg pr-3 shadow-lg border border-[1px] border-gray-200 transition duration-300 hover:scale-105">
+                <div class="bg-white pt-3 pl-3 pr-3 pb-2 rounded-lg shadow-lg border border-[1px] border-gray-200 transition duration-300 hover:scale-105">
                     <a href="{% url 'movies' coming_soon_movie.id %}"><img class="img" src="https://images.tmdb.org/t/p/w1280/{{coming_soon_movie.poster_path}}" alt="movie image" loading="lazy"></a>
                     <p class="overflow-hidden font-semibold">{{coming_soon_movie.title}}</p>
                     <p class="text-gray-500">{{coming_soon_movie.release_date}}</p> 
@@ -30,18 +30,18 @@
         </div>
     
         <h2 class="text-2xl font-semibold mx-7 pb-5 pt-3">What's Popular</h2>
-        <div class="grid grid-flow-col auto-cols-[18%] overflow-x-auto gap-x-3 mx-5 pb-8">
+        <div class="grid grid-flow-col auto-cols-[15%] overflow-x-auto gap-x-3 mx-5 pb-8">
             {% for movie in most_popular_movies %}
                 <div class="bg-white pt-3 pl-3 rounded-lg pr-3 shadow-lg border border-[1px] border-gray-200 transition duration-300 hover:scale-105">
                     <a href="{% url 'movies' movie.id %}"><img class="img" src="https://images.tmdb.org/t/p/w1280/{{movie.poster_path}}" alt="movie image" width="100px"></a>
-                    <p class="font-semibold">{{movie.title}}</p>
+                    <p class="font-semibold ">{{movie.title}}</p>
                     <p class="text-gray-500">{{movie.release_date}}</p> 
                 </div>
             {% endfor %}
         </div>
     </div>
     
-    <div class="recent-activities w-1/6">
+    <!-- <div class="recent-activities w-1/6">
         <h1>RECENT ACTIVITIES</h1>
         {% for review in reviews %}
         <div>
@@ -49,7 +49,7 @@
             <p>{{review.body}}</p>
         </div>
         {% endfor %}
-    </div>
+    </div> -->
 
 </div>
 
