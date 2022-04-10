@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>MovieZone</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style type="text/tailwindcss">
 
@@ -14,7 +18,7 @@
         @tailwind utilities;
 
         ::-webkit-scrollbar {
-            width: 10px;
+            width: 0px;
             height: 0px;
         }
         
@@ -28,24 +32,20 @@
         }
 
         .img {
-            @apply w-[9.5rem] rounded-lg
+            @apply w-52 rounded-lg
         }
         
     </style>
+
 </head>
+
 <body class="bg-white">
     {% include 'navbar.html' %}
 
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
 
     {% block content %}
 
     {% endblock %}
 </body>
+
 </html>

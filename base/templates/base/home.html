@@ -2,56 +2,145 @@
 
 {% block content %}
 
-
 <div class="home-container flex">
 
-    <div class="sidebar w-1/5 ">
-        <a href="{% url 'home'  %}?q=Top250Movies"><h3>Trending</h3></a>
-        <a href="{% url 'home'  %}?q=Top250TVShows"><h3>Popular</h3></a>
-        {% if request.user.is_authenticated == True %}
-            <a href="{% url 'home'  %}?q=LikedMovies"><h3>Liked Movies</h3></a>
-            <a href="{% url 'home'  %}?q=Friends"><h3>Friends</h3></a>
-        {% endif %}
-        <hr>
+    <!-- Sidebar -->
+    <div class="sidebar w-1/5 pl-[72px] pt-16 font-semibold text-gray-500 text-lg sticky">
+        <div class="flex">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-1 mr-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            <a href="{% url 'home'  %}?q=trending">
+                <h3 class="transition duration-500 pb-5 hover:text-black">Trending</h3>
+            </a>
+        </div>
+        <div class="flex">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-1 mr-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+            </svg>
+            <a href="{% url 'home'  %}?q=popular">
+                <h3 class="transition duration-500 pb-5 hover:text-black">Popular</h3>
+            </a>
+        </div>
+
+        <div class="flex">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-1 mr-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            <a href="{% url 'home'  %}?q=LikedMovies">
+                <h3 class="transition duration-500 pb-5 hover:text-black">Liked Movies</h3>
+            </a>
+        </div>
+        <div class="flex">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-1 mr-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <a href="{% url 'home'  %}?q=Friends">
+                <h3 class="transition duration-500 pb-5 hover:text-black">Friends</h3>
+            </a>
+        </div>
     </div>
 
+    <!-- Main Section -->
     <div class="main-content w-4/5">
         <h2 class="text-2xl font-semibold mx-7 pb-5 pt-5">Coming Soon</h2>
-        <div class="grid grid-flow-col auto-cols-[15%] overflow-x-auto gap-x-3 mx-5 pb-8 " >
-            
-            {% for coming_soon_movie in movies_coming_soon %} 
-                <div class="bg-white pt-3 pl-3 pr-3 pb-2 rounded-lg shadow-lg border border-[1px] border-gray-200 transition duration-300 hover:scale-105">
-                    <a href="{% url 'movies' coming_soon_movie.id %}"><img class="img" src="https://images.tmdb.org/t/p/w1280/{{coming_soon_movie.poster_path}}" alt="movie image" loading="lazy"></a>
-                    <p class="overflow-hidden font-semibold">{{coming_soon_movie.title}}</p>
-                    <p class="text-gray-500">{{coming_soon_movie.release_date}}</p> 
+        <div class="grid grid-flow-col auto-cols-[20%] overflow-x-auto gap-x-3 mx-5 pb-8 rounded-lg">
+
+            {% for coming_soon_movie in movies_coming_soon %}
+            <div
+                class="bg-white pt-3 pl-3 pr-3 pb-2 rounded-lg shadow-lg border border-[1px] border-gray-200 transition duration-300 hover:scale-105">
+                <a href="{% url 'movies' coming_soon_movie.id %}" class="link"><img class="img"
+                        src="https://images.tmdb.org/t/p/w1280/{{coming_soon_movie.poster_path}}" alt="movie image"
+                        loading="lazy"></a>
+                <p class="title truncate font-semibold">{{coming_soon_movie.title}}</p>
+                <div class="flex justify-between">
+                    <p class="release_date text-gray-500 text-sm">{{coming_soon_movie.release_date }}</p>
                 </div>
+            </div>
             {% endfor %}
 
         </div>
-    
+
         <h2 class="text-2xl font-semibold mx-7 pb-5 pt-3">What's Popular</h2>
-        <div class="grid grid-flow-col auto-cols-[15%] overflow-x-auto gap-x-3 mx-5 pb-8">
+        <div class="grid grid-flow-col auto-cols-[20%] overflow-x-auto gap-x-3 mx-5 pb-8 rounded-lg">
             {% for movie in most_popular_movies %}
-                <div class="bg-white pt-3 pl-3 rounded-lg pr-3 shadow-lg border border-[1px] border-gray-200 transition duration-300 hover:scale-105">
-                    <a href="{% url 'movies' movie.id %}"><img class="img" src="https://images.tmdb.org/t/p/w1280/{{movie.poster_path}}" alt="movie image" width="100px"></a>
-                    <p class="font-semibold ">{{movie.title}}</p>
-                    <p class="text-gray-500">{{movie.release_date}}</p> 
+            <div
+                class="bg-white pt-3 pl-3 pb-3 pr-3 rounded-lg shadow-lg border border-[1px] border-gray-200 transition duration-300 hover:scale-105">
+                <a href="{% url 'movies' movie.id %}" class="link"><img class="img"
+                        src="https://images.tmdb.org/t/p/w1280/{{movie.poster_path}}" alt="movie image"
+                        width="100px"></a>
+                <p class="title truncate font-semibold">{{movie.title}}</p>
+                <div class="flex justify-between">
+                    <p class="release_date text-gray-500 text-sm">{{movie.release_date }}</p>
                 </div>
+            </div>
             {% endfor %}
         </div>
     </div>
-    
-    <!-- <div class="recent-activities w-1/6">
-        <h1>RECENT ACTIVITIES</h1>
-        {% for review in reviews %}
-        <div>
-            <p>{{review.user.username}} - {{review.created | timesince}} ago </p>
-            <p>{{review.body}}</p>
-        </div>
-        {% endfor %}
-    </div> -->
 
 </div>
 
+<script>
 
+    // Release date manipulation
+    dates = document.getElementsByClassName("release_date");
+    for (let i = 0; i < dates.length; i++) {
+        let date = new Date(Date.parse(dates[i].innerHTML));
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        dates[i].innerHTML = date.toLocaleDateString('en-US', options);
+    }
+
+    // Get the csrf token cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    let csrftoken = getCookie('csrftoken');
+
+    // Heart button 
+    function handleClick(event) {
+
+        const url = `http://${window.location.hostname}:${window.location.port}/api/add_liked_movie/`;
+        const parent = event.currentTarget.parentNode.parentNode;
+
+        const title = parent.querySelector('p').innerHTML;
+        const image_path = parent.querySelector('img').src;
+        const movie_id = parent.querySelector('a').href.split('/')[4];
+        const data = `movie_id=${movie_id}&title=${title}&image_path=${image_path}`
+
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send(data)
+
+        xhr.onload = function () {
+            const parsed_data = JSON.parse(this.responseText);
+            if (parsed_data.status === "success")
+                event.target.classList.add("fill-red-400")
+        }
+    }
+</script>
 {% endblock content %}

@@ -1,25 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <title>Login to MovieZone</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Document</title>
-</head>
-<body>
-    <div class="pt-8">
-        <form method="POST" action="">
-            {% csrf_token %}
-            <label>Username:</label>
-            <input type="text" name="Username" id="" placeholder="Enter User Name">
-            <label>Password:</label>
-            <input type="password" name="Password" id="" placeholder="Enter Password">
-            <input type="submit" value="Login">
-        </form>
-        <p>Haven't signed up yet?</p>
-        <a href="{% url 'register' %}">Sign Up</a>
-    </div>
-</body>
-</html>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
+    <style type="text/tailwindcss">
+        #logo {
+            font-family: 'DM Sans', sans-serif;
+        }
+    </style>
+
+</head>
+
+<body class="bg-gray-100 flex flex-col">
+
+    <div>
+
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Log In to MovieZone</h2>
+        <p class="mt-2 text-center text-sm text-gray-600 max-w">
+            Haven't signed up yet?
+            <a href="{% url 'register' %}"
+                class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">Register</a>
+        </p>
+    </div>
+
+    <div class="mt-8 mb-5 bg-white mx-auto rounded-lg shadow-lg w-[500px]">
+        <form method="POST" action="" class="flex flex-col px-10 py-8">
+            {% csrf_token %}
+            <label class="text-sm font-medium text-gray-700">Username:</label>
+            <input type="text" name="Username" id="username" placeholder="Enter User Name">
+            <label  class="text-sm font-medium text-gray-700 mt-4">Password:</label>
+            <input type="password" name="Password" id="email" placeholder="Enter Password">
+            <input type="submit" value="Login" class="cursor-pointer bg-indigo-600 rounded-md shadow-sm py-2 px-4 text-white mt-3 hover:bg-indigo-700">
+                {% for message in messages %}
+                    <p class="font-medium text-sm text-red-600 text-center mt-3">{{message}}</p>
+                {% endfor %}
+
+
+        </form>
+    </div>
+
+    <h1 id="logo" class="font-bold text-2xl text-center">MovieZone</h1>
+
+    <script>
+        let username = document.getElementById("username")
+        username.classList.add("px-3", "py-2", "mt-1", "rounded-lg", "border", "border-gray-300", "focus:border-indigo-500", "focus:outline-none", "focus:ring-1", "focus:ring-indigo-500", "shadow-sm")
+
+        let email = document.getElementById("email")
+        email.classList.add("px-3", "py-2", "mt-1", "rounded-lg", "border", "border-gray-300", "focus:border-indigo-500", "focus:outline-none", "focus:ring-1", "focus:ring-indigo-500", "shadow-sm")
+
+    </script>
+</body>
+
+</html>

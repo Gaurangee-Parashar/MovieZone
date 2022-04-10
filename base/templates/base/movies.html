@@ -6,11 +6,23 @@
 
 </style>
 
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'white': '#ffffff'
+                }
+            }
+        }
+    }
+</script>
+
 <!-- Header section -->
 
 <div class="absolute overflow-hidden h-[600px]">
-    <img src="https://images.tmdb.org/t/p/w1280/{{movie_details.backdrop_path}}" class="w-screen h-auto opacity-[0.4]"
-        alt="">
+    <img src="https://images.tmdb.org/t/p/w1280{{movie_details.backdrop_path}}"
+        class="w-screen h-auto opacity-[0.4] pt-[-10%]" alt="">
 </div>
 <div class="grid grid-flow-col overflow-hidden h-[600px] backdrop-blur-md">
 
@@ -46,34 +58,69 @@
     </div>
 </section>
 
+<!-- Trailers -->
+<h1 class="font-semibold text-2xl ml-28 mt-7">Trailers</h1>
+<section class="grid grid-flow-col auto-cols-[530px] ml-28 mr-24 mt-5 rounded-xl h-[320px] overflow-x-auto">
+    {% for trailer in movie_trailers %}
+    <div class="flex justify-center">
+        <iframe width="560" height="315"
+            src="https://www.youtube.com/embed/{{trailer.key}}?rel=0&modestbranding=1&controls=1&showinfo=0"
+            title="YouTube video player" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+    </div>
+    {% endfor %}
+</section>
+
 <!-- Reviews section -->
 <section>
     <h1 class="font-semibold text-2xl ml-28 mt-7">Social</h1>
     <p id="response"></p>
 
-    <div>
+    <!-- Input field form -->
+    <div class="flex ml-28 mt-5 mb-5">
         {% if request.user.is_authenticated %}
+        <div class="h-9 w-9 mt-2.5 mr-1 rounded-full overflow-hidden">
+            <img src="{{request.user.profile.profile_pic.url}}" alt="" class="h-full w-full object-cover">
+        </div>
         <form id="review-form">
             {% csrf_token %}
-            <input type="text" name="body" placeholder="Write your review here..." id="">
+            <input id="review-input-field" type="text" name="body"
+                class="p-3 border-b-2 border-gray-300 text-gray-900 focus:outline-none w-72"
+                placeholder="Write your review here..." autocomplete="off">
         </form>
+        <span id="underline-animation"
+            class="absolute bg-gray-400 w-0 h-0.5 transition-all duration-300 mt-12 ml-10"></span>
         {% endif %}
     </div>
 
-    <div id="replies" class="replies">
+    <!-- Reviews -->
+    <div id="reviews" class="mb-44">
         {% for review in reviews %}
-        <h3><a href="{% url 'profile' review.user.id %}">@{{review.user.username}}</a> - {{review.created | timesince}} ago
-            {% if request.user == review.user %}<a href="{% url 'delete_review' review.id %}">Delete</a>{% endif %}</h3>
-        <p>---->{{review.body}}</p>
-        {% for reply in review_replies %}
-        {% if reply.parent_review.id == review.id %}
-        <h3>@{{reply.user.username}} replied to @{{reply.parent_review.user.username}} - {{reply.created | timesince}}
-            ago </h3>
-        <p>----{{reply.body}}</p>
-        {% endif %}
+        <div id="{{review.id}}" class="mb-1 mr-28 ml-28 pb-3">
+            <div class="flex items-center">
+                <div class="h-9 w-9 mt-2.5 mr-1 rounded-full overflow-hidden">
+                    <img src="{{review.user.profile_pic_url}}" alt="" class="w-full h-full object-cover">
+                </div>
+                <h3><a href="{% url 'profile' review.user.user_id %}"
+                        class="ml-3 font-semibold text-sm">{{review.user.username}}</a> - <span
+                        class="time_created text-xs text-gray-500">{{review.created}}</span>
+
+                    <!-- Delete  -->
+                    {% if request.user.id == review.user.user_id %}
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="absolute left-[320px] mt-[-20px] h-5 w-5 stroke-red-500 hover:stroke-red-700 hover:cursor-pointer"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1"
+                        onclick="handleSVGClick(event, '{{review.id}}')">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    {% endif %}
+                </h3>
+            </div>
+            <p class="ml-[52px] text-sm break-words">{{review.body}}</p>
+        </div>
         {% endfor %}
-        {% endfor %}
-        <hr>
     </div>
 
 
@@ -107,34 +154,75 @@
     let movie_id = window.location.pathname.split("/")[2]
     let url = `http://${window.location.hostname}:${window.location.port}/api/new_review/`;
 
-    
+
     form.addEventListener('submit', (event) => {
-        
-        
+
+
         event.preventDefault();
-        
+
+        if (event.target.querySelector('#review-input-field').value == "")
+            return;
+
         let body = `body=${event.target.body.value}&movie_id=${movie_id}`;
-        
+
         // Send the POST request
         const xhr = new XMLHttpRequest();
         xhr.open('POST', url, true);
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-        xhr.onload = function() {
+        xhr.onload = function () {
             const data = JSON.parse(this.responseText);
             const date = new Date(data.created).getMinutes();
             const currentTime = new Date(Date.now()).getMinutes();
-            const replies = document.getElementById('replies');
+            const reviews = document.getElementById('reviews');
 
-            // Creating the new reply element
-            const new_reply = document.createElement('div');
-            const new_reply_heading = document.createElement('h3')
-            new_reply_heading.innerHTML = `<a href="http://${window.location.hostname}:${window.location.port}/profile/${data.user.user_id}">@${data.user.username}</a> - ${currentTime - date} minutes ago`
-            const new_reply_body = document.createElement('p').appendChild(document.createTextNode(`---->${data.body}`))
-            new_reply.appendChild(new_reply_heading)
-            new_reply.appendChild(new_reply_body)
-            replies.prepend(new_reply)
+            // Creating the new review element
+
+            // Creating the outer div
+            const new_review = document.createElement('div');
+            new_review.classList.add("mb-1", "mr-28", "ml-28", "pb-3")
+            new_review.id = `${data.id}`
+
+            // Creating the inner div with flex items
+            const flex_items = document.createElement('div')
+            flex_items.classList.add("flex", "items-center")
+
+            // Profile pic
+
+            const profile_pic_div = document.createElement('div')
+            profile_pic_div.classList.add("h-9", "w-9", "mt-2.5", "mr-1", "rounded-full", "overflow-hidden")
+
+            const image = document.createElement("img")
+            image.src = `${data.user.profile_pic_url}`
+            image.classList.add("w-full", "h-full", "object-cover")
+
+            profile_pic_div.appendChild(image)
+
+            // Heading
+            const new_review_heading = document.createElement('h3')
+            new_review_heading.innerHTML = `<a href="http://${window.location.hostname}:${window.location.port}/profile/${data.user.user_id}" class="ml-3 font-semibold text-sm">${data.user.username}</a> - <span class="text-xs text-gray-500"">${currentTime - date} minutes ago</span><svg xmlns="http://www.w3.org/2000/svg"
+                    class="absolute left-[335px] mt-[-20px] h-5 w-5 stroke-red-500 hover:stroke-red-700 hover:cursor-pointer"
+                    fill="none" viewBox="0 0 24 24" stroke-width="1"
+                    onclick="handleSVGClick(event, '${data.id}')">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>`
+
+            // Body
+            const new_review_body = document.createElement('p')
+            new_review_body.classList.add("ml-[52px]", "text-sm", "break-words")
+            new_review_body.innerHTML = `${data.body}`
+
+            // Appending the heading to the flex div
+            flex_items.appendChild(profile_pic_div)
+            flex_items.appendChild(new_review_heading)
+
+            // Appending everything to the main review element
+            new_review.append(flex_items)
+            new_review.append(new_review_body)
+            // flex_items.appendChild(new_review_body)
+            reviews.prepend(new_review)
         }
 
         xhr.send(body);
@@ -142,7 +230,47 @@
         form.reset();
     })
 
+    // Review release date manipulation
+    dates = document.getElementsByClassName("time_created");
 
+    for (let i = 0; i < dates.length; i++) {
+        const element = dates[i];
+        const date = new Date(element.innerText)
+        element.innerHTML = `${date.toLocaleDateString()}`
+    }
+
+    // Review input field
+
+    let inputField = document.getElementById("review-input-field");
+
+    inputField.onfocus = () => {
+        document.getElementById("underline-animation").classList.remove("w-0")
+        document.getElementById("underline-animation").classList.add("w-72")
+    }
+
+    inputField.onkeydown = (e) => {
+        if (e.keyCode == 27) {
+            e.target.blur();
+            document.getElementById("underline-animation").classList.remove("w-72")
+            document.getElementById("underline-animation").classList.add("w-0")
+        }
+    }
+
+    // Delete
+    function handleSVGClick(event, review_id) {
+        const url = `http://${window.location.hostname}:${window.location.port}/api/delete_review/${review_id}`
+        const xhr = new XMLHttpRequest();
+        xhr.open('DELETE', url, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        xhr.onload = () => {
+            const review_div = document.getElementById(review_id)
+            review_div.remove()
+        }
+
+        xhr.send()
+    }
 
 </script>
 

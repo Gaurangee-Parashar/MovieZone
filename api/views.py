@@ -1,11 +1,11 @@
 import uuid
-
-
-import uuid
+from warnings import catch_warnings
+from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from social.models import Review
+from user_management.models import LikedMovie
 from .serializers import ReviewSerializer
 
 
@@ -19,6 +19,8 @@ def getRoutes(request):
     ]
 
     return Response(routes)
+
+# Reviews
 
 @api_view(['GET'])
 def getReviews(request, id):
@@ -44,3 +46,30 @@ def deleteReview(request, id):
         review = Review.objects.get(id=id)
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# User profile
+
+@api_view(['POST'])
+def add_liked_movie(request):
+    if request.method == 'POST':
+
+        try:
+            print(LikedMovie.objects.filter(movie_id=request.POST.get('movie_id')).get(profile=request.user.profile))
+            response = {
+                'status' : 'failure'
+            }
+            return Response(response)
+        except:
+
+            LikedMovie.objects.create(
+                profile = request.user.profile,
+                movie_id = request.POST.get('movie_id'),
+                title = request.POST.get('title'),
+                image_path = request.POST.get('image_path')
+            )
+
+            response = {
+                'status' : 'success'
+            }
+
+            return Response(response)

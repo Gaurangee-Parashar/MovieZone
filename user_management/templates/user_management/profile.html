@@ -1,6 +1,104 @@
 {% extends 'main.html' %}
 
 {% block content %}
-    <p>{{user.username}}</p>
-    <p>joined {{user.date_joined | timesince}} ago</p>
+
+
+<section class="flex items-center h-screen w-screen">
+    <div class="absolute w-screen h-60 overflow-hidden top-14">
+        <img align="right" src="{{user.profile.profile_pic.url}}" class="mt-[-150px] opacity-50 blur-lg">
+    </div>
+    <div class="absolute shadow-2xl ml-14 w-80 h-[550px] overflow-hidden">
+        <img src="{{user.profile.profile_pic.url}}" alt="" class="h-80 w-auto object-cover">
+        <p class="font-semibold ml-5 mt-5">ABOUT ME</p>
+        <p class="ml-5 mt-3 text-gray-500">{{user.profile.bio}}</p>
+    </div>
+    <p class="absolute ml-[450px] text-2xl font-semibold mt-[-200px]">Liked Movies</p>
+    <div class="grid grid-flow-col auto-cols-[175px] rounded-lg overflow-scroll ml-[450px] mt-52 mr-5 pb-14 gap-3">
+        {% for movie in liked_movies %}
+        <div
+            class="bg-white pt-3 pl-3 pr-3 pb-2 rounded-lg shadow-lg border border-[1px] border-gray-200 transition duration-300 hover:scale-105">
+            <a href="{% url 'movies' movie.movie_id %}"><img class="img"
+                    src="https://images.tmdb.org/t/p/w1280/{{movie.image_path}}" alt="movie image" loading="lazy"></a>
+            <p class="overflow-hidden font-semibold">{{movie.title}}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="absolute ml-[450px] mt-[-450px]">
+        <p class="font-semibold text-4xl">{{user.username}}</p>
+        <p class="mt-3">joined {{user.date_joined | timesince}} ago</p>
+    </div>
+
+    <div class="absolute ml-[450px] mt-[520px] pr-96">
+        <p class="font-semibold text-2xl">Recent Activities</p>
+        <div id="reviews" class="absolute mb-44 mt-5">
+            {% for review in reviews %}
+            <div id="{{review.id}}" class="mb-1 mr-28 pb-3 pr-44 hover:bg-gray-100"
+                onclick="handleReviewClick(event, '{{review.movie_id}}', '{{review.id}}')">
+                <div class="flex items-center">
+                    <div class="h-9 w-9 mt-2.5 mr-1 rounded-full overflow-hidden">
+                        <img src="{{review.user.profile.profile_pic.url}}" alt="" class="w-full h-full object-cover">
+                    </div>
+                    <h3><a href="{% url 'profile' review.user.id %}"
+                            class="ml-3 font-semibold text-sm">{{review.user.username}}</a> - <span
+                            class="time_created text-xs text-gray-500">{{review.created |timesince}} ago</span>
+
+                        <!-- Delete  -->
+                        {% if request.user.id == review.user.id %}
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="relative left-[320px] mt-[-20px] h-5 w-5 stroke-red-500 hover:stroke-red-700 hover:cursor-pointer"
+                            fill="none" viewBox="0 0 24 24" stroke-width="1"
+                            onclick="handleSVGClick(event, '{{review.id}}')">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        {% endif %}
+                    </h3>
+                </div>
+                <p class="ml-[52px] text-sm break-words">{{review.body}}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<script>
+    // Get the CSRF Token cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    let csrftoken = getCookie('csrftoken');
+    // Delete
+    function handleSVGClick(event, review_id) {
+        const url = `http://${window.location.hostname}:${window.location.port}/api/delete_review/${review_id}`
+        const xhr = new XMLHttpRequest();
+        xhr.open('DELETE', url, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        xhr.onload = () => {
+            const review_div = document.getElementById(review_id)
+            review_div.remove()
+        }
+
+        xhr.send()
+    }
+
+    function handleReviewClick(event, movie_id, review_id) {
+        window.open(`http://${window.location.hostname}:${window.location.port}/movies/${movie_id}#${review_id}`, "_self")
+    }
+</script>
 {% endblock content %}

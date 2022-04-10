@@ -2,32 +2,82 @@
 
 {% block content %}
 
-<h1>Here are the results</h1>
-
-<div class="flex gap-x-10">
-    <div class="w-1/5 bg-red-100 pr-44 mt-8">
-        <ul>
-            <li>Movies</li>
-            <li>TV Shows</li>
-            <li>People</li>
-            <li>Companies</li>
+<div class="flex gap-x-10 h-screen">
+    <div class="w-[260px] h-72 bg-white mt-14 ml-20 rounded-lg shadow-md overflow-hidden">
+        <p class="bg-sky-500 p-5 text-white font-semibold text-lg">Search Results</p>
+        <ul class="pt-3">
+            {% if search == "movie" %}
+                <li class="pl-5 pr-2 pb-2 pt-2 bg-gray-200 "><a class="font-semibold" href="/search/movie?query={{name}}">Movies</a><span class="bg-gray-100 pt-0.5 pb-0.5 pl-2 pr-2 rounded-md ml-36 text-sm">{{search_results_no.movies}}</span></li>
+            {% else %}
+                <li class="pl-5 pr-2 pb-2 pt-2 hover:bg-gray-200"><a href="/search/movie?query={{name}}">Movies</a><span class="bg-gray-200 pt-0.5 pb-0.5 pl-2 pr-2 rounded-md ml-36 text-sm">{{search_results_no.movies}}</span></li>
+            {% endif %}
+            {% if search == "tv" %}            
+                <li class="pl-5 pr-3 pb-3 pt-3 bg-gray-200"><a class="font-semibold" href="/search/tv?query={{name}}">TV Shows</a><span class="bg-gray-100 pt-0.5 pb-0.5 pl-2 pr-2 rounded-md ml-[124px] text-sm">{{search_results_no.tv}}</span></li>
+            {% else %}
+                <li class="pl-5 pr-3 pb-3 pt-3 hover:bg-gray-200"><a href="/search/tv?query={{name}}">TV Shows<span class="bg-gray-200 pt-0.5 pb-0.5 pl-2 pr-2 rounded-md ml-32 text-sm">{{search_results_no.tv}}</span></a></li>
+            {% endif %}
+            {% if search == "person" %}            
+                <li class="pl-5 pr-3 pb-3 pt-3 bg-gray-200"><a class="font-semibold" href="/search/person?query={{name}}">People</a><span class="bg-gray-100 pt-0.5 pb-0.5 pl-2 pr-2 rounded-md ml-[150px] text-sm">{{search_results_no.persons}}</span></li>
+            {% else %}
+                <li class="pl-5 pr-3 pb-3 pt-3 hover:bg-gray-200"><a href="/search/person?query={{name}}">People</a><span class="bg-gray-200 pt-0.5 pb-0.5 pl-2 pr-2 rounded-md ml-[150px] text-sm">{{search_results_no.persons}}</span></li>
+            {% endif %}
+            {% if search == "company" %}            
+                <li class="pl-5 pr-3 pb-3 pt-3 bg-gray-200 font-semibold"><a href="/search/company?query={{name}}">Companies</a></li>
+            {% else %}
+                <li class="pl-5 pr-3 pb-3 pt-3 hover:bg-gray-200"><a href="/search/company?query={{name}}">Companies</a></li>
+            {% endif %}
         </ul>
     </div>
 
-    <div class="w-4/5 mt-3">
-        {% for movie in movie_details %}
-            <div class="mt-5 w-[95%] h-44">
-            <a href="{% url 'movies' movie.id %}" class="flex bg-white rounded-lg shadow-md gap-3">
-                    <img class="object-cover w-24 rounded-l-lg" src="https://images.tmdb.org/t/p/w1280/{{movie.Image}}" alt="">
-                    <div class="pt-5 pb-5 overflow-hidden">
-                        <p class="text-lg font-semibold">{{movie.Title}}</p>
-                        <p class="text-md text-gray-500">{{movie.Year}}</p>
-                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 text-ellipsis">{{movie.Overview}}</p>
-                    </div>
+    <div class="w-9/12 mt-3 flex flex-col gap-3 mb-5 overflow-scroll">
+        <p class="text-xl font-semibold pb-1">Here are the results</p>
+        {% if search == "person" %}
+            {% for result in results %}
+            <a href="{% url 'person' result.id %}" class="flex bg-white rounded-lg shadow-lg gap-3 h-36 mr-52">
+                <img class="object-cover w-24 rounded-l-lg" src="{{result.image}}" alt="">
+                <div class="mb-3 mt-3 overflow-hidden">
+                    <p class="text-lg font-semibold">{{result.name}}</p>
+                    <p class="text-md text-gray-500 pb-3">{{result.known_for_department}}</p>
+                    <div class="flex even:bg-gray-100">
+                        {% for movie in result.known_for %}
+                            {% if movie.name != None %}
+                                <p class="after:content-[',\00a0']">{{movie.name}}</p>
+                            {% else %}
+                                <p class="after:content-[',\00a0']">{{movie.title}}</p>
+                            {% endif %}
+                        {% endfor %}
+                </div>
                 </div>
             </a>
             {% endfor %}
+        {% else %}
+            {% for result in results %}
+                <a href="{% url 'movies' result.id %}" class="flex bg-white rounded-lg shadow-lg gap-3 h-36 mr-52">
+                    <img class="object-cover w-24 rounded-l-lg" src="{{result.image}}" alt="">
+                    <div class="mb-5 mt-3 overflow-hidden">
+                        <p class="text-lg font-semibold">{{result.title}}</p>
+                        {% if result.year is not None %}
+                            <p class="release_date text-md text-gray-500 pb-3">{{result.year}}</p>
+                        {% endif %}
+                        <p class="font-normal text-gray-700 dark:text-gray-400 truncate pb-8">{{result.overview}}</p>
+                    </div>
+                </a>
+            {% endfor %}
+        {% endif %}
     </div>
 </div>
 
+
+<script>
+    
+    // Release date manipulation
+    dates = document.getElementsByClassName("release_date");
+
+    for (let i = 0; i < dates.length; i++) {
+        let date = new Date(Date.parse(dates[i].innerHTML));
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        dates[i].innerHTML = date.toLocaleDateString('en-US', options);
+    }
+
+</script>
 {% endblock content %}

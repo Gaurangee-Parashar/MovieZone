@@ -1,23 +1,121 @@
+<html>
 
-<nav class="sticky top-0 z-10 bg-white backdrop-filter backdrop-blur-xl bg-opacity-50 shadow-lg">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <div class="flex mx-auto px-4 items-center  h-16">
-        <a href="/">
-            <h1 class="font-semibold text-2xl">MovieZone</h1>
-        </a>    
+    <style type="text/tailwindcss">
+        #logo {
+            font-family: 'DM Sans', sans-serif;
+        }
 
-        <form method="GET" action="{% url 'search' %}" class="ml-44">
-            <input type="text" class="rounded-full p-2 w-96 outline-1 outline-gray-300" name="query" placeholder="Search...">
-            <i class="fa fa-search text-gray-400 z-20 hover:text-gray-500"></i>
-        </form>
+    </style>
 
-        {% if request.user.is_authenticated %}
-            <p class="ml-[600px]">Hello, {{request.user.username}}</p>
-            <a href="{% url 'logout' %}" class="ml-5">Logout</a>
-        {% else %}
-            <a href="{% url 'login' %}">Login</a>
-            <a href="{% url 'register' %}">Sign Up</a>
-        {% endif %}
-    </div>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'scale': 'scale 0.1s ease-out 1',
+                    },
+                    
+                    keyframes: {
+                        scale : {
+                            '0%' : { transform: 'translateY(-10px)' },
+                            '100%' : { transform: 'translateY(0px)' }
+                        } 
+                    }
+                }
+            }
+        }
+    </script>
 
-</nav>
+</head>
+
+
+<body>
+
+    <nav class="relative sticky top-0 z-10 bg-white backdrop-filter backdrop-blur-xl bg-opacity-50">
+
+        <div id="navbar-main" class="flex pl-4 items-center h-16">
+            <a id="logo" href="/">
+                <h1 class="font-semibold text-2xl pl-14">MovieZone</h1>
+            </a>
+
+            <form method="GET" action="{% url 'search' type='movie' %}" class="ml-32">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute mt-2.5 ml-2 stroke-gray-500" fill="none"
+                    viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="search"
+                    autocomplete="off"
+                    class="rounded-md pl-9 pt-2 pb-2 pr-2 w-[500px] bg-gray-100 outline-1 outline-gray-300 focus:w-[600px] transition-{width} duration-150"
+                    name="query" placeholder="Search...">
+            </form>
+
+            <div class="ml-[1280px] flex items-center font-semibold text-gray-700 absolute right-5">
+                <div class="h-11 w-11 rounded-full overflow-hidden mr-3">
+                    <img src="{{request.user.profile.profile_pic.url}}" alt="" class="h-full w-full object-cover">
+                </div>
+                    
+                <p>{{request.user.username}}</p>
+                
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 mt-0.5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" onclick="handleChevronClick()">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+
+        // Search bar
+        let search = document.getElementById("search");
+        search.onkeydown = handleEscKey;
+
+        function handleEscKey(e) {
+            if (e.keyCode == 27)
+                search.blur();
+            if (e.keyCode == 13) {
+                search.classList.add("pl-3")
+                search.parentElement.removeChild(search.parentElement.firstElementChild)
+                search.insertAdjacentHTML("afterend", "<svg class=\"animate-spin -ml-1 mr-3 h-5 w-5 absolute top-0 mt-[22px] ml-[570px] text-gray-500\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\"><circle class=\"opacity-25\" cx=\"12\" cy=\"12\" r=\"10\" stroke=\"currentColor\" stroke-width=\"4\"></circle><path class=\"opacity-75\" fill=\"currentColor\" d=\"M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z\"></path></svg>")
+            }
+                
+        }
+
+        // Profile Dropdown menu
+
+        let isOpen = false;
+
+        function handleChevronClick() {
+            let dropdown = document.getElementById("dropdown");
+            
+            function open() {
+                document.getElementById("navbar-main").insertAdjacentHTML("afterend", "<div id=\"dropdown\" class=\"absolute animate-scale bg-white py-2 rounded-md w-32 mt-[-8px] left-[90%] drop-shadow-lg opacity-1\"><div class=\"flex hover:bg-gray-200\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 mt-2.5 ml-2 \" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1\" /></svg> <a href=\"{% url 'logout' %}\" class=\"block text-gray-600 px-4 py-2 hover:text-black\">Logout</a></div><div class=\"flex hover:bg-gray-200    \"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 mt-2.5 ml-2\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z\" /></svg><a href=\"{% url 'profile' request.user.id %}\" class=\"block text-gray-600 px-4 py-2 hover:text-black\">Profile</a></div>")
+                isOpen = true
+            }
+
+            function close() {
+                document.getElementById("dropdown").remove();
+                isOpen = false;
+            }
+
+            if(isOpen == false){
+                open();
+                return;
+            }
+            if(isOpen == true) {
+                close()
+                return;
+            }
+        }
+
+    </script>
+</body>
+
+</html>
