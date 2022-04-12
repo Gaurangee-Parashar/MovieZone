@@ -8,10 +8,3 @@ class Profile(models.Model):
 
     def __str__(self):
         return str(self.user)
-
-class LikedMovie(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    movie_id = models.CharField(max_length=15)
-    title = models.CharField(max_length=500)
-    overview = models.TextField(max_length=1000)
-    image_path = models.CharField(max_length=500)

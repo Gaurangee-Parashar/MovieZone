@@ -84,11 +84,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'MovieZone.wsgi.application'
 ASGI_APPLICATION = 'MovieZone.asgi.application'
 
-# CHANNEL_LAYERS = {
-#     'default' : {
-#         'BACKED' : 'channels.layers.InMemoryChannelLayer'
-#     }
-# }
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -136,6 +136,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
 MEDIA_URL = '/images/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 

@@ -2,8 +2,6 @@ from webbrowser import get
 import requests
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from social.models import Review, ReviewReply
-from user_management.models import LikedMovie
 
 # Home page 
 def coming_soon(KEY):
@@ -31,13 +29,9 @@ def home(request):
         results = most_popular(KEY)
         context = {'results' : results, 'q' : q}
         return render(request, 'base/category.html', context)
-    if q == "LikedMovies":
-        results = request.user.profile.likedmovie_set.all()
-        context = {'results' : results, 'q' : q}
-        return render(request, 'base/category.html', context)
+    
     movies_coming_soon = coming_soon(KEY)
     most_popular_movies = most_popular(KEY)
-    liked_movies = LikedMovie.objects.filter(profile_id=request.user.id)
     context = {'movies_coming_soon' : movies_coming_soon, 'most_popular_movies' : most_popular_movies, 'liked_movies' : liked_movies}
     return render(request, 'base/home.html', context)
 
@@ -107,24 +101,14 @@ def get_reviews(id):
         reviews = None
     return reviews
 
-def get_review_replies(review):
-    try: 
-        replies = ReviewReply.objects.get(parent_review=review)
-    except:
-        replies = None
-    return replies
-
 def movies(request, id):
     KEY = "08e732edbde3ebbc312edf9503748b58"
     reviews = get_reviews(id)
-    review_replies = []
-    for review in reviews:
-        review_replies.append(get_review_replies(review))
     movie_details = requests.get(f'https://api.themoviedb.org/3/movie/{id}?api_key={KEY}').json()
     movie_cast = requests.get(f"https://api.themoviedb.org/3/movie/{id}/credits?api_key={KEY}").json()['cast']
     movie_trailers = requests.get(f"https://api.themoviedb.org/3/movie/{id}/videos?api_key={KEY}").json()['results']
 
-    context = {'movie_details' : movie_details, 'movie_cast' : movie_cast, 'movie_trailers' : movie_trailers, 'reviews' : reviews, 'review_replies' : review_replies}
+    context = {'movie_details' : movie_details, 'movie_cast' : movie_cast, 'movie_trailers' : movie_trailers, 'reviews' : reviews,}
     return render(request, 'base/movies.html', context)
 
 # Person details

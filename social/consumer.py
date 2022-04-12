@@ -1,27 +1,52 @@
 import json
-import uuid
+from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from social.models import Review
 
-class WSConsumer(WebsocketConsumer):
-    
+class ChatConsumer(WebsocketConsumer):
     def connect(self):
+        me = self.scope['user']
+        print(me)
+        self.user_id = self.scope['url_route']['kwargs']['id']
+        self.channel_group = 'chat_%s' % self.user_id
+
+        # Join room group
+        async_to_sync(self.channel_layer.group_add)(
+            self.channel_group,
+            self.channel_name
+        )
 
         self.accept()
 
-        self.send(json.dumps({
-            'status' : 200,
-            'Message' : 'You have successfully established the connection!', 
-        }))
+    def disconnect(self, close_code):
+        # Leave room group
+        async_to_sync(self.channel_layer.group_discard)(
+            self.channel_group,
+            self.channel_name
+        )
 
+    # Receive message from WebSocket
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        print(self.scope["user"])
-        # review = text_data_json['message']
-        review = Review.objects.create(
-            user = self.scope["user"],
-            movie_id = text_data_json["movie_id"],
-            id=str(uuid.uuid4()),
-            body = text_data_json["body"]
+        message = text_data_json['message']
+        username = text_data_json['username']
+
+        # Send message to room group
+        async_to_sync(self.channel_layer.group_send)(
+            self.channel_group,
+            {
+                'type': 'chat_message',
+                'message': message,
+                'username' : username 
+            }
         )
-        # print("New Review: ",  review)
+
+    # Receive message from room group
+    def chat_message(self, event):
+        message = event['message']
+        username = event['username']
+
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({
+            'message': message,
+            'username' : username
+        }))

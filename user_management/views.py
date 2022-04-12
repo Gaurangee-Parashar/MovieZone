@@ -55,7 +55,6 @@ def registerPage(request):
 def profile(request, id):
     user = User.objects.get(id=id)
     profile = user.profile
-    liked_movies = user.profile.likedmovie_set.all()
     reviews = Review.objects.filter(user=user)
     context = {'user' : user, 'liked_movies' : liked_movies, 'profile' : profile, 'reviews' : reviews}
     return render(request, 'user_management/profile.html', context)
