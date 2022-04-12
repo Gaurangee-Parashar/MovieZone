@@ -32,7 +32,7 @@ def home(request):
     
     movies_coming_soon = coming_soon(KEY)
     most_popular_movies = most_popular(KEY)
-    context = {'movies_coming_soon' : movies_coming_soon, 'most_popular_movies' : most_popular_movies, 'liked_movies' : liked_movies}
+    context = {'movies_coming_soon' : movies_coming_soon, 'most_popular_movies' : most_popular_movies}
     return render(request, 'base/home.html', context)
 
 # Search 
